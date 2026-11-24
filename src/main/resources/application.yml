@@ -8,7 +8,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: ${AUTH_SERVER:http://localhost:8082}/.well-known/jwks.json
+          jwk-set-uri: ${AUTH_JWKS_URI:http://localhost:8082}/.well-known/jwks.json
 
   cloud:
     gateway:
@@ -16,10 +16,14 @@ spring:
         webflux:
           routes:
             - id: user-service
-              uri: ${USER_SERVER:http://localhost:8081}
+              uri: ${USER_SERVICE_URL:http://localhost:8081}
               predicates:
                 - Path= /api/users/** , /api/cards/**
             - id: auth-service
-              uri: ${AUTH_SERVER:http://localhost:8082}
+              uri: ${AUTH_SERVICE_URL:http://localhost:8082}
               predicates:
-                - Path= /api/**
+                - Path= /api/auth/**
+            - id: order-service
+              uri: ${ORDER_SERVICE_URL:http://localhost:8083}
+              predicates:
+                - Path= /api/items/** , /api/orders/**
