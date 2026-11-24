@@ -10,7 +10,7 @@ services:
       AUTH_SERVICE_URL: http://auth-service:8082
       USER_SERVICE_URL: http://user-service:8081
       ORDER_SERVICE_URL: http://order-service:8083
-    networks: {edge,backend}
+    networks: [edge,backend]
     depends_on:
     - auth-service
     - user-service
@@ -44,7 +44,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-    networks: [ backend ]
+    networks: [backend]
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -62,13 +62,13 @@ services:
         condition: service_healthy
       user-redis:
         condition: service_healthy
-    networks: [ backend ]
+    networks: [backend]
 
   user-db:
     image: postgres:16-alpine
     environment:
       POSTGRES_DB: userdb
-      POSTGRES_USER: ${USER_DB_USER:-password}
+      POSTGRES_USER: ${USER_DB_USER:-postgres}
       POSTGRES_PASSWORD: ${USER_DB_PASSWORD:-demo}
     volumes:
       - user-pgdata:/var/lib/postgresql/data
@@ -77,7 +77,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-    networks: [ backend ]
+    networks: [backend]
 
   user-redis:
     image: redis:7.2-alpine
@@ -86,7 +86,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-    networks: [ backend ]
+    networks: [backend]
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -99,18 +99,19 @@ services:
       DB_PASSWORD: ${ORDER_DB_PASSWORD:-demo}
       REDIS_HOST: order-redis
       AUTH_JWKS_URI: http://auth-service:8082/.well-known/jwks.json
+      USER_SERVICE_URL: http://user-service:8081
     depends_on:
       order-db:
         condition: service_healthy
       order-redis:
         condition: service_healthy
-    networks: [ backend ]
+    networks: [backend]
 
   order-db:
     image: postgres:16-alpine
     environment:
       POSTGRES_DB: orderdb
-      POSTGRES_USER: ${ORDER_DB_USER:-password}
+      POSTGRES_USER: ${ORDER_DB_USER:-postgres}
       POSTGRES_PASSWORD: ${ORDER_DB_PASSWORD:-demo}
     volumes:
       - order-pgdata:/var/lib/postgresql/data
@@ -119,7 +120,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-    networks: [ backend ]
+    networks: [backend]
 
   order-redis:
     image: redis:7.2-alpine
@@ -128,7 +129,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-    networks: [ backend ]
+    networks: [backend]
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 networks:

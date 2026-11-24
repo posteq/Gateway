@@ -1,5 +1,6 @@
 package com.innowise.academy.gateway.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
@@ -11,14 +12,17 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SecurityAuthConfig {
 
-    SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http){
-        http
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(e -> e.pathMatchers(HttpMethod.POST,
-                        "/api/register","/api/login","/api/refresh").permitAll()
+    @Bean
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http){
+        return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(e ->
+                        e.pathMatchers(HttpMethod.POST,
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/api/auth/refresh").permitAll()
                         .anyExchange().authenticated())
-                .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()));
-        return http.build();
+                .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
+                .build();
     }
 
 }
